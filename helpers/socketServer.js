@@ -85,12 +85,10 @@ module.exports = function(io) {
                         losers  : session.users
                                      .map(socket => {return {score : socket.score, name : socket.name}})
                                      .sort((a, b) => a - b)
-                                     .slice(0,5)
                                      .reverse(),
                         winners : session.users
                                      .map(socket => {return {score : socket.score, name : socket.name}})
                                      .sort((a, b) => a - b)
-                                     .slice(0,5)
                     })
                 break;
             }
