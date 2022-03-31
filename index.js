@@ -15,6 +15,8 @@ require("./helpers/mongo.js")();
 
 app.set('trust proxy', 1)
 
+app.use(express.static(__dirname + '/views/'));
+
 app.use(cors({origin: ['http://localhost:8080', 'http://172.16.10.149:8080'], credentials: true, methods: ['GET', 'POST', 'PUT', 'DELETE'], allowedHeaders: ['Content-Type', 'Authorization']}))
 
 app.get('/', (req, res) => {
