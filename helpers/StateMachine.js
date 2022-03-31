@@ -13,14 +13,6 @@ class StateMachine {
     total_questions = 8
 
     load_next_state() {
-
-        console.log(
-            {
-                index: this.index,
-                total: this.total_questions
-            }
-        )
-
         switch(this.state_index) {
             case 3:
                 if(this.index >= this.total_questions) this.state_index = 5; // Skip subresults on end

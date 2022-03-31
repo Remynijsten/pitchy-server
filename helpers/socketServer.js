@@ -7,23 +7,14 @@ module.exports = function(io) {
 
     let session
 
-    let broadcast = (message, data) => {
-
-        session.users.forEach(socket => {
-            console.log(`broadcast sent to ${socket.name}`)
-        })
-
-        session.users.forEach(client => {
-            client.emit(message, data)
-        })
-    }
+    let broadcast = (message, data) => session.users.forEach(client => client.emit(message, data))
 
     let create_session = () => {
         // Clear other sessions
         this.activeSessions = []
 
         // Create new session
-        session = new Session();
+        session         = new Session();
 
         // Push to sessions array
         this.activeSessions.push(session)
@@ -43,6 +34,10 @@ module.exports = function(io) {
                 case 'reset':
 
                 break;
+
+                case 'get':
+                    client.emit('session', {event: 'get', session: session})
+                break;
             }
         })
 
@@ -56,21 +51,13 @@ module.exports = function(io) {
 
                 client.emit('add_user');
 
-                broadcast('user_joined',
-                {users : session.users.map(client => {
-                    return { name : client.name }
-                })})
+                broadcast('user_joined', session.users.map(socket => socket.name))
             } else {
                 client.emit('username_error', {error : 'Naam is al in gebruik'})
             }
         })
 
-        // client.on('get_users', () => {
-        //     client.emit('get_users', this.activeClients.map(client => {
-        //         return { name : client.name }
-        //     }))
-        // })
-        //
+        client.on('get_users', () => session !== undefined ? client.emit('get_users', session.users.map(socket => socket.name)) : '')
 
         client.on('load_next_state', () => {
             session === undefined ? create_session() : ''
@@ -81,9 +68,5 @@ module.exports = function(io) {
 
             broadcast('load_next_state', session.statemachine.load_next_state())
         })
-
-        // client.on('disconnect', () => {
-        //     this.activeClients.splice(this.activeClients.indexOf(client), 1)
-        // })
     })
 }
