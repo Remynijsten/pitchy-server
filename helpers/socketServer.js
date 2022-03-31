@@ -45,7 +45,8 @@ module.exports = function(io) {
             session === undefined ? create_session() : ''
 
             if(!session.users.some(client => client.name === data.name)){
-                client.name = data.name
+                client.name     = data.name
+                client.score    = 0
 
                 session.users.push(client)
 
@@ -67,6 +68,32 @@ module.exports = function(io) {
             // client.emit('load_next_state', session.statemachine.load_next_state())
 
             broadcast('load_next_state', session.statemachine.load_next_state())
+        })
+
+        client.on('question', args => {
+            switch (args.event) {
+                case 'submit':
+                    if(session === undefined) return;
+
+                    // Add score
+                    let user = session.users.find(socket => socket.name === args.username)
+                    user.score = user.score + parseInt(args.score)
+
+                    // Return score to client
+                    broadcast('question', {
+                        event   : 'submit',
+                        losers  : session.users
+                                     .map(socket => {return {score : socket.score, name : socket.name}})
+                                     .sort((a, b) => a - b)
+                                     .slice(0,5)
+                                     .reverse(),
+                        winners : session.users
+                                     .map(socket => {return {score : socket.score, name : socket.name}})
+                                     .sort((a, b) => a - b)
+                                     .slice(0,5)
+                    })
+                break;
+            }
         })
     })
 }
