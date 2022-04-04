@@ -10,7 +10,7 @@ class StateMachine {
     ]
     index           = 0
     state_index     = 0
-    total_questions = 8
+    total_questions = 9
 
     load_next_state() {
         switch(this.state_index) {
