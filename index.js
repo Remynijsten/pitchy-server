@@ -11,8 +11,6 @@ const HOST          = process.env.HOST || 'localhost';
 // Parse env file
 require('dotenv').config();
 
-require("./helpers/mongo.js")();
-
 app.set('trust proxy', 1)
 
 app.use(express.static(__dirname + '/views/'));
